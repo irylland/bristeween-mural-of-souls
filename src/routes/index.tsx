@@ -50,10 +50,16 @@ function Countdown() {
   );
 }
 
-function Carousel({ slides, accent }: { slides: Slide[]; accent?: boolean }) {
+function Carousel({ slides, accent, delay = 3500 }: { slides: Slide[]; accent?: boolean; delay?: number }) {
   const [i, setI] = useState(0);
+  const [paused, setPaused] = useState(false);
   const n = slides.length;
   const at = (k: number) => slides[(i + k + n) % n] as Slide;
+  useEffect(() => {
+    if (paused || n < 2) return;
+    const t = setInterval(() => setI((k) => (k + 1) % n), delay);
+    return () => clearInterval(t);
+  }, [paused, i, n, delay]);
   const card = (s: Slide, pos: -1 | 0 | 1) => (
     <button
       key={pos}
@@ -76,7 +82,7 @@ function Carousel({ slides, accent }: { slides: Slide[]; accent?: boolean }) {
     </button>
   );
   return (
-    <div>
+    <div onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
       <div className="flex items-center justify-center gap-3 sm:gap-6">
         {n > 1 && card(at(-1), -1)}
         {card(at(0), 0)}
