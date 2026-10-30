@@ -52,7 +52,7 @@ function Countdown() {
 function Carousel({ slides, accent }: { slides: Slide[]; accent?: boolean }) {
   const [i, setI] = useState(0);
   const n = slides.length;
-  const at = (k: number) => slides[(i + k + n) % n];
+  const at = (k: number) => slides[(i + k + n) % n] as Slide;
   const card = (s: Slide, pos: -1 | 0 | 1) => (
     <button
       key={pos}
