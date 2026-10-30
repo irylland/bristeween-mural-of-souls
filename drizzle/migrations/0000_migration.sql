@@ -1,0 +1,11 @@
+CREATE TABLE public.rsvps (id uuid primary key default gen_random_uuid(), name text not null check (char_length(name) between 1 and 80), guests int not null default 1 check (guests between 1 and 10), costume text check (char_length(costume) <= 120), created_at timestamptz not null default now());
+CREATE TABLE public.souls (id uuid primary key default gen_random_uuid(), name text not null check (char_length(name) between 1 and 60), message text not null check (char_length(message) between 1 and 280), created_at timestamptz not null default now());
+GRANT SELECT, INSERT ON public.rsvps TO anon, authenticated;
+GRANT SELECT, INSERT ON public.souls TO anon, authenticated;
+GRANT ALL ON public.rsvps, public.souls TO service_role;
+ALTER TABLE public.rsvps ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.souls ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "read rsvps" ON public.rsvps FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY "add rsvp" ON public.rsvps FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "read souls" ON public.souls FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY "add soul" ON public.souls FOR INSERT TO anon, authenticated WITH CHECK (true);

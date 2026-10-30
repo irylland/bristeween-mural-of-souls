@@ -62,26 +62,28 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --radius: 1rem;
+  --background: oklch(0.14 0.03 300);
+  --foreground: oklch(0.95 0.02 80);
+  --card: oklch(0.19 0.04 300);
+  --card-foreground: oklch(0.95 0.02 80);
+  --popover: oklch(0.19 0.04 300);
+  --popover-foreground: oklch(0.95 0.02 80);
+  --primary: oklch(0.72 0.18 55);
+  --primary-foreground: oklch(0.15 0.03 300);
+  --secondary: oklch(0.26 0.06 300);
+  --secondary-foreground: oklch(0.95 0.02 80);
+  --muted: oklch(0.24 0.04 300);
+  --muted-foreground: oklch(0.7 0.04 300);
+  --accent: oklch(0.78 0.17 140);
+  --accent-foreground: oklch(0.15 0.03 300);
+  --destructive: oklch(0.6 0.22 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.32 0.06 300);
+  --input: oklch(0.3 0.05 300);
+  --ring: oklch(0.72 0.18 55);
+  --glow: 0 0 40px color-mix(in oklab, var(--primary) 45%, transparent);
+  --gradient-night: radial-gradient(ellipse at top, oklch(0.28 0.09 300), var(--background) 65%);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -142,3 +144,8 @@
     color: var(--color-foreground);
   }
 }
+
+@layer base { body { font-family: 'Comfortaa', system-ui, sans-serif; background-image: var(--gradient-night); min-height:100vh; } h1,h2,h3 { font-family: 'Creepster', cursive; letter-spacing: .04em; } }
+@utility glow { box-shadow: var(--glow); }
+@keyframes floaty { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-12px) } }
+@utility animate-floaty { animation: floaty 5s ease-in-out infinite; }
