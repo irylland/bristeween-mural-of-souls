@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import gallery1 from "@/assets/gallery-1.jpg";
 import gallery2 from "@/assets/gallery-2.jpg";
@@ -8,7 +8,9 @@ import gallery4 from "@/assets/gallery-4.jpg";
 import edicoes from "@/assets/edicoes.json";
 
 const LOGO = "https://res.cloudinary.com/dkpn35e8m/image/upload/v1784320267/Bristeween_Logo_Final-1_gnn9gq.png";
-const PARTY = new Date("2026-11-07T00:00:00-03:00").getTime();
+const VIDEO_DESKTOP = "https://res.cloudinary.com/dkpn35e8m/video/upload/v1768865455/Bristeween_qj4bhd.mp4";
+const VIDEO_MOBILE = "https://res.cloudinary.com/dkpn35e8m/video/upload/v1768867212/Bristeween_celular_hgaqor.mp4";
+const PARTY = new Date("2026-11-07T22:30:00-03:00").getTime();
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -197,14 +199,173 @@ const SOCIALS = [
   { icon: "🎧", name: "Spotify", handle: "BristeWeen 2026", desc: "Sintonize na trilha sonora do nosso macabro no Spotify.", cta: "Ouvir playlist", href: "https://spotify.com" },
 ];
 
-function Index() {
+function IntroScreen({ onStart }: { onStart: () => void }) {
   return (
-    <main className="mx-auto max-w-5xl px-4 pb-20">
-      <header className="pb-8 pt-12 text-center">
-        <img src={LOGO} alt="Logo BristeWeen" className="mx-auto mb-6 h-36 w-auto animate-floaty sm:h-44" />
-        <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">07 de novembro · 22h30</p>
-        <div className="mt-8"><Countdown /></div>
-      </header>
+    <div
+      className="fixed inset-0 z-50 flex flex-col items-center justify-between px-4 py-8 select-none overflow-hidden"
+      style={{
+        background: "radial-gradient(circle at center, rgba(234, 88, 12, 0.08) 0%, rgba(0, 0, 0, 1) 75%)",
+        backgroundColor: "#000000",
+      }}
+    >
+      {/* Top spacer */}
+      <div className="h-6 w-full" />
+
+      {/* Center content */}
+      <div className="flex flex-col items-center text-center">
+        {/* Circular Emblem */}
+        <div className="relative flex items-center justify-center">
+          {/* Subtle Outer Glow */}
+          <div className="absolute inset-0 rounded-full bg-orange-600/15 blur-2xl" />
+
+          {/* Outer ring */}
+          <div className="relative flex h-64 w-64 sm:h-80 sm:w-80 items-center justify-center rounded-full border border-orange-500/25 bg-[#0b0806] shadow-[0_0_60px_-10px_rgba(234,88,12,0.3)]">
+            {/* Inner concentric ring */}
+            <div className="absolute inset-2.5 sm:inset-3 rounded-full border border-orange-500/15 pointer-events-none" />
+
+            {/* Logo */}
+            <img
+              src={LOGO}
+              alt="BristeWeen"
+              className="relative z-10 w-44 sm:w-56 object-contain drop-shadow-[0_0_25px_rgba(249,115,22,0.5)] transition-transform duration-500 hover:scale-105"
+            />
+          </div>
+        </div>
+
+        {/* Year */}
+        <p className="mt-8 sm:mt-10 text-xs sm:text-sm font-semibold tracking-[0.6em] text-orange-200/70 uppercase">
+          2 0 2 6
+        </p>
+
+        {/* Call to action */}
+        <button
+          onClick={onStart}
+          className="group mt-4 flex items-center gap-3 rounded-full px-6 sm:px-8 py-3.5 font-bold tracking-[0.3em] uppercase text-[#ffd5b8] transition-all duration-300 hover:scale-105 hover:text-white focus:outline-none"
+          style={{
+            textShadow: "0 0 16px rgba(251, 146, 60, 0.8), 0 0 32px rgba(249, 115, 22, 0.4)",
+          }}
+        >
+          <span className="text-lg sm:text-xl text-orange-300 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110 drop-shadow-[0_0_10px_rgba(251,146,60,0.9)]">
+            ✦
+          </span>
+          <span className="text-sm sm:text-base tracking-[0.35em] font-extrabold">
+            INICIAR MISSÃO
+          </span>
+          <span className="text-lg sm:text-xl text-orange-300 transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-110 drop-shadow-[0_0_10px_rgba(251,146,60,0.9)]">
+            ✧
+          </span>
+        </button>
+      </div>
+
+      {/* Footer */}
+      <footer className="pb-2 text-center text-[10px] sm:text-xs uppercase tracking-[0.35em] text-neutral-500/70 font-medium">
+        🕯️ BRISTEWEEN ©
+      </footer>
+    </div>
+  );
+}
+
+function VideoIntro({
+  src,
+  onFinish,
+  isFading,
+}: {
+  src: string;
+  onFinish: () => void;
+  isFading: boolean;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play().catch((err) => {
+        console.warn("Autoplay with sound prevented, playing muted:", err);
+        if (videoRef.current) {
+          videoRef.current.muted = true;
+          videoRef.current.play().catch(console.error);
+        }
+      });
+    }
+  }, [src]);
+
+  return (
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black transition-opacity duration-700 ${
+        isFading ? "opacity-0 pointer-events-none" : "opacity-100"
+      }`}
+    >
+      <button
+        onClick={onFinish}
+        className="absolute top-6 right-6 z-50 flex items-center gap-2 rounded-full border border-white/20 bg-black/70 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white/90 backdrop-blur-md transition-all duration-300 hover:border-orange-500/60 hover:bg-black/90 hover:text-white hover:scale-105"
+      >
+        <span>Pular</span>
+        <span className="text-xs">⏭️</span>
+      </button>
+
+      <video
+        ref={videoRef}
+        src={src}
+        autoPlay
+        playsInline
+        onEnded={onFinish}
+        onError={onFinish}
+        className="h-full w-full object-contain sm:object-cover bg-black"
+      />
+    </div>
+  );
+}
+
+function Index() {
+  const [stage, setStage] = useState<"intro" | "playing" | "done">("intro");
+  const [videoSrc, setVideoSrc] = useState(VIDEO_DESKTOP);
+  const [isFading, setIsFading] = useState(false);
+
+  const handleStartMission = () => {
+    const isMobile = window.innerWidth < 768;
+    setVideoSrc(isMobile ? VIDEO_MOBILE : VIDEO_DESKTOP);
+    setStage("playing");
+  };
+
+  const handleFinishVideo = () => {
+    setIsFading(true);
+    setTimeout(() => {
+      setStage("done");
+      setIsFading(false);
+    }, 600);
+  };
+
+  const handleReplayIntro = () => {
+    const isMobile = window.innerWidth < 768;
+    setVideoSrc(isMobile ? VIDEO_MOBILE : VIDEO_DESKTOP);
+    setStage("playing");
+  };
+
+  return (
+    <>
+      {stage === "intro" && <IntroScreen onStart={handleStartMission} />}
+      {stage === "playing" && (
+        <VideoIntro src={videoSrc} onFinish={handleFinishVideo} isFading={isFading} />
+      )}
+
+      <main
+        className={`mx-auto max-w-5xl px-4 pb-20 transition-opacity duration-700 ${
+          stage === "intro" ? "opacity-0 pointer-events-none h-screen overflow-hidden" : "opacity-100"
+        }`}
+      >
+        <header className="pb-8 pt-12 text-center">
+          <img src={LOGO} alt="Logo BristeWeen" className="mx-auto mb-6 h-36 w-auto animate-floaty sm:h-44" />
+          <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">07 de novembro · 22h30</p>
+          <div className="mt-8"><Countdown /></div>
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={handleReplayIntro}
+              className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-card/60 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary/80 transition hover:border-primary hover:bg-card hover:text-primary hover:scale-105"
+            >
+              <span>🎬 Rever Vídeo de Entrada</span>
+            </button>
+          </div>
+        </header>
 
       <Section eyebrow="Edições passadas" title="Galeria do Ritual" desc="Registros das noites em que o sobrenatural tomou conta do BristeWeen.">
         <Gallery />
@@ -254,5 +415,6 @@ function Index() {
         <p>© BristeWeen 2026 · Sobrenatural</p>
       </footer>
     </main>
+    </>
   );
 }
