@@ -5,6 +5,7 @@ import gallery1 from "@/assets/gallery-1.jpg";
 import gallery2 from "@/assets/gallery-2.jpg";
 import gallery3 from "@/assets/gallery-3.jpg";
 import gallery4 from "@/assets/gallery-4.jpg";
+import edicoes from "@/assets/edicoes.json";
 
 const LOGO = "https://res.cloudinary.com/dkpn35e8m/image/upload/v1784320267/Bristeween_Logo_Final-1_gnn9gq.png";
 const PARTY = new Date("2026-11-07T00:00:00-03:00").getTime();
@@ -84,14 +85,34 @@ function Carousel({ slides, accent }: { slides: Slide[]; accent?: boolean }) {
       {n > 1 && (
         <div className="mt-5 flex items-center justify-center gap-4">
           <button onClick={() => setI((i - 1 + n) % n)} aria-label="Anterior" className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:border-primary hover:text-primary">‹</button>
-          <div className="flex gap-1.5">
-            {slides.map((_, k) => (
-              <span key={k} className={`h-1.5 rounded-full transition-all ${k === i ? `w-5 ${accent ? "bg-accent" : "bg-primary"}` : "w-1.5 bg-muted"}`} />
-            ))}
-          </div>
+          {n > 12 ? (
+            <span className="text-xs font-bold tabular-nums text-muted-foreground">{i + 1} / {n}</span>
+          ) : (
+            <div className="flex gap-1.5">
+              {slides.map((_, k) => (
+                <span key={k} className={`h-1.5 rounded-full transition-all ${k === i ? `w-5 ${accent ? "bg-accent" : "bg-primary"}` : "w-1.5 bg-muted"}`} />
+              ))}
+            </div>
+          )}
           <button onClick={() => setI((i + 1) % n)} aria-label="Próximo" className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:border-primary hover:text-primary">›</button>
         </div>
       )}
+    </div>
+  );
+}
+
+const YEARS = ["2025", "2024", "2023"] as const;
+function Gallery() {
+  const [year, setYear] = useState<(typeof YEARS)[number]>("2025");
+  const urls = (edicoes as Record<string, string[]>)[year] ?? [];
+  return (
+    <div>
+      <div className="mb-6 flex justify-center gap-2">
+        {YEARS.map((y) => (
+          <button key={y} onClick={() => setYear(y)} className={`rounded-full border px-4 py-1.5 text-xs font-bold tracking-wider transition ${y === year ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:border-primary hover:text-primary"}`}>{y}</button>
+        ))}
+      </div>
+      <Carousel key={year} slides={urls.map((src, k) => ({ src, title: `BristeWeen ${year}`, sub: `Foto ${k + 1}`, year }))} />
     </div>
   );
 }
@@ -180,13 +201,9 @@ function Index() {
       </header>
 
       <Section eyebrow="Edições passadas" title="Galeria do Ritual" desc="Registros das noites em que o sobrenatural tomou conta do BristeWeen.">
-        <Carousel slides={[
-          { src: gallery1, title: "Ghostface", sub: "Edição 2025", year: "2025" },
-          { src: gallery2, title: "Casal Sombrio", sub: "Edição 2025", year: "2025" },
-          { src: gallery4, title: "Bruxa da Noite", sub: "Edição 2024", year: "2024" },
-          { src: gallery3, title: "Caixa Mistério", sub: "Edição 2024", year: "2024" },
-        ]} />
+        <Gallery />
       </Section>
+
 
       <Section eyebrow="Hall dos horrores" title="Campeões de Fantasias" desc="As almas que conquistaram a noite sombria e o prêmio máximo das edições do BristeWeen.">
         <Carousel slides={[
