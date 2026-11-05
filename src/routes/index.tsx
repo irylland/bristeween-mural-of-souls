@@ -6,6 +6,10 @@ import champion2023 from "@/assets/champion-2023.jpg";
 import mystery2025 from "@/assets/mystery-2025.jpg";
 import miss2025 from "@/assets/miss-2025.jpg";
 import edicoes from "@/assets/edicoes.json";
+import { InstagramFeed } from "@/components/InstagramFeed";
+import { DonosDoCaldeirao } from "@/components/DonosDoCaldeirao";
+import { Parceiros } from "@/components/Parceiros";
+import { Navigation, type NavTab } from "@/components/Navigation";
 
 const LOGO =
   "https://res.cloudinary.com/dkpn35e8m/image/upload/v1784320267/Bristeween_Logo_Final-1_gnn9gq.png";
@@ -13,7 +17,7 @@ const VIDEO_DESKTOP =
   "https://res.cloudinary.com/dkpn35e8m/video/upload/v1768865455/Bristeween_qj4bhd.mp4";
 const VIDEO_MOBILE =
   "https://res.cloudinary.com/dkpn35e8m/video/upload/v1768867212/Bristeween_celular_hgaqor.mp4";
-const PARTY = new Date("2026-11-07T22:30:00-03:00").getTime();
+const PARTY = new Date("2026-11-07T20:30:00-03:00").getTime();
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -32,9 +36,15 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Slide = { src: string; title: string; sub: string; year: string; icon?: string };
-
-const LOVABLE_CDN = "https://bristeween-mural-of-souls.lovable.app";
+type Slide = {
+  src: string;
+  title: string;
+  sub: string;
+  year: string;
+  icon?: string;
+  rating?: string;
+  info?: string;
+};
 
 function resolveAssetUrl(src: string): string {
   if (!src) return "";
@@ -59,19 +69,15 @@ function Countdown() {
     ["Seg", (d / 1e3) % 60],
   ] as const;
   if (now !== null && d === 0)
-    return (
-      <p className="text-3xl text-primary" style={{ fontFamily: "Creepster" }}>
-        A festa começou! 👻
-      </p>
-    );
+    return <p className="text-3xl text-primary font-['Creepster']">A festa começou! 👻</p>;
   return (
-    <div className="flex items-end justify-center gap-3 sm:gap-5">
+    <div className="flex items-end justify-center gap-2 sm:gap-5">
       {parts.map(([l, v]) => (
-        <div key={l} className="text-center">
-          <div className="text-5xl font-bold tabular-nums text-primary drop-shadow-[0_0_18px] drop-shadow-primary/40 sm:text-7xl">
+        <div key={l} className="text-center min-w-[3.25rem] sm:min-w-[4.5rem]">
+          <div className="text-4xl font-bold tabular-nums text-primary drop-shadow-[0_0_25px_rgba(249,115,22,0.85)] sm:text-6xl md:text-7xl">
             {now === null ? "--" : String(Math.floor(v)).padStart(2, "0")}
           </div>
-          <div className="mt-1 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+          <div className="mt-1 text-[9px] uppercase tracking-[0.25em] text-orange-200/70 sm:text-[10px] sm:tracking-[0.3em] font-mono">
             {l}
           </div>
         </div>
@@ -82,115 +88,198 @@ function Countdown() {
 
 function Carousel({
   slides,
-  accent,
+  accent = "red",
   delay = 3500,
 }: {
   slides: Slide[];
-  accent?: boolean | "purple" | "rose";
+  accent?: "red" | "green" | "purple" | "rose" | boolean;
   delay?: number;
 }) {
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
+  const touchStartX = useRef<number | null>(null);
   const n = slides.length;
+
   const at = (k: number) => slides[(i + k + n) % n] as Slide;
+
   useEffect(() => {
     if (paused || n < 2) return;
     const t = setInterval(() => setI((k) => (k + 1) % n), delay);
     return () => clearInterval(t);
   }, [paused, i, n, delay]);
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    setPaused(true);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current !== null) {
+      const diff = touchStartX.current - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 35) {
+        if (diff > 0) {
+          setI((k) => (k + 1) % n);
+        } else {
+          setI((k) => (k - 1 + n) % n);
+        }
+      }
+    }
+    touchStartX.current = null;
+    setPaused(false);
+  };
+
+  const isGreen = accent === "green";
+  const isPurple = accent === "purple";
   const isRose = accent === "rose";
-  const isPurple = accent === "purple" || accent === true;
+  const isRed = accent === "red" || (!isGreen && !isPurple && !isRose);
 
   const activeBorder = isRose
-    ? "border-rose-500/70 shadow-[0_0_50px_-10px] shadow-rose-500/40"
+    ? "border-rose-500/90 shadow-[0_0_45px_rgba(244,63,94,0.7)]"
     : isPurple
-      ? "border-purple-500/70 shadow-[0_0_50px_-10px] shadow-purple-500/40"
-      : "border-primary/60 shadow-[0_0_50px_-10px] shadow-primary/40";
+      ? "border-purple-500/90 shadow-[0_0_45px_rgba(168,85,247,0.7)]"
+      : isGreen
+        ? "border-emerald-500/90 shadow-[0_0_45px_rgba(16,185,129,0.7)]"
+        : "border-red-500/90 shadow-[0_0_45px_rgba(239,68,68,0.7)]";
 
-  const badgeStyle = isRose
-    ? "bg-rose-950/80 text-rose-200 border border-rose-500/40"
+  const ambientGlowClass = isRose
+    ? "bg-rose-500/60 shadow-[0_0_60px_rgba(244,63,94,0.7)]"
     : isPurple
-      ? "bg-purple-950/80 text-purple-200 border border-purple-500/40"
-      : "bg-primary text-primary-foreground";
+      ? "bg-purple-500/60 shadow-[0_0_60px_rgba(168,85,247,0.7)]"
+      : isGreen
+        ? "bg-emerald-500/60 shadow-[0_0_60px_rgba(16,185,129,0.7)]"
+        : "bg-red-500/60 shadow-[0_0_60px_rgba(239,68,68,0.7)]";
 
-  const dotStyle = isRose ? "bg-rose-500" : isPurple ? "bg-purple-500" : "bg-primary";
+  const btnStyle = isRose
+    ? "border-rose-500/40 text-rose-300 hover:border-rose-400 hover:bg-rose-950/60 shadow-[0_0_15px_rgba(244,63,94,0.25)]"
+    : isPurple
+      ? "border-purple-500/40 text-purple-300 hover:border-purple-400 hover:bg-purple-950/60 shadow-[0_0_15px_rgba(168,85,247,0.25)]"
+      : isGreen
+        ? "border-emerald-500/40 text-emerald-300 hover:border-emerald-400 hover:bg-emerald-950/60 shadow-[0_0_15px_rgba(16,185,129,0.25)]"
+        : "border-red-500/40 text-red-300 hover:border-red-400 hover:bg-red-950/60 shadow-[0_0_15px_rgba(239,68,68,0.25)]";
 
-  const card = (s: Slide, pos: -1 | 0 | 1) => (
-    <button
-      key={pos}
-      onClick={() => pos !== 0 && setI((i + pos + n) % n)}
-      aria-label={pos === 0 ? s.title : pos === -1 ? "Anterior" : "Próximo"}
-      className={`relative w-44 shrink-0 overflow-hidden rounded-2xl border bg-neutral-950 transition-all duration-500 sm:w-56 ${
-        pos === 0
-          ? `z-10 scale-100 opacity-100 ${activeBorder}`
-          : `scale-90 opacity-40 hover:opacity-70 ${pos === -1 ? "-rotate-6" : "rotate-6"} border-border`
-      }`}
-    >
-      <img
-        src={resolveAssetUrl(s.src)}
-        alt={s.title}
-        loading="lazy"
-        width={768}
-        height={1024}
-        className="aspect-[3/4] w-full object-cover"
-      />
-      <span
-        className={`absolute left-2.5 top-2.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${badgeStyle}`}
-      >
-        {s.year}
-      </span>
-      {s.icon && (
-        <span className="absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-[11px] backdrop-blur-sm">
-          {s.icon}
-        </span>
-      )}
-      {pos === 0 && (
-        <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent p-3 pt-10 text-center">
-          <span className="block text-sm font-bold uppercase tracking-wide text-white">
-            {s.title}
-          </span>
-          <span className="mt-0.5 block text-[11px] uppercase tracking-widest text-white/70">
-            {s.sub}
-          </span>
-        </span>
-      )}
-    </button>
-  );
-  return (
-    <div onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
-      <div className="flex items-center justify-center gap-3 sm:gap-6">
-        {n > 1 && card(at(-1), -1)}
-        {card(at(0), 0)}
-        {n > 1 && card(at(1), 1)}
+  const counterText = isRose
+    ? "text-rose-300 font-mono"
+    : isPurple
+      ? "text-purple-300 font-mono"
+      : isGreen
+        ? "text-emerald-300 font-mono"
+        : "text-red-300 font-mono";
+
+  const counterBorder = isRose
+    ? "border-rose-950/80 bg-black/80"
+    : isPurple
+      ? "border-purple-950/80 bg-black/80"
+      : isGreen
+        ? "border-emerald-950/80 bg-black/80"
+        : "border-red-950/80 bg-black/80";
+
+  // Offset array for 3D Coverflow perspective [-2, -1, 0, 1, 2]
+  const offsets = [-2, -1, 0, 1, 2] as const;
+
+  const card = (s: Slide, pos: -2 | -1 | 0 | 1 | 2) => {
+    let positionClass = "";
+    if (pos === 0) {
+      positionClass = `z-30 scale-100 opacity-100 [transform:rotateY(0deg)] ${activeBorder}`;
+    } else if (pos === -1) {
+      positionClass = `z-20 scale-[0.88] opacity-70 [transform:rotateY(14deg)_scale(0.92)] border-neutral-700/60 hover:opacity-90 -mr-4 sm:-mr-6`;
+    } else if (pos === 1) {
+      positionClass = `z-20 scale-[0.88] opacity-70 [transform:rotateY(-14deg)_scale(0.92)] border-neutral-700/60 hover:opacity-90 -ml-4 sm:-ml-6`;
+    } else if (pos === -2) {
+      positionClass = `z-10 scale-[0.72] opacity-35 [transform:rotateY(25deg)_scale(0.8)] border-neutral-800/40 hidden sm:block -mr-8 sm:-mr-12`;
+    } else if (pos === 2) {
+      positionClass = `z-10 scale-[0.72] opacity-35 [transform:rotateY(-25deg)_scale(0.8)] border-neutral-800/40 hidden sm:block -ml-8 sm:-ml-12`;
+    }
+
+    const hasOverlayText = Boolean(s.title || s.sub);
+
+    return (
+      <div key={pos} className="relative shrink-0 overflow-visible">
+        {pos === 0 && (
+          <div
+            aria-hidden="true"
+            className={`absolute -inset-4 sm:-inset-6 rounded-3xl blur-2xl opacity-80 pointer-events-none z-0 transition-all duration-500 ${ambientGlowClass}`}
+          />
+        )}
+        <button
+          onClick={() => pos !== 0 && setI((i + pos + n) % n)}
+          aria-label={pos === 0 ? s.title || "Foto ativa" : pos < 0 ? "Anterior" : "Próximo"}
+          className={`relative z-10 w-36 xs:w-44 sm:w-56 shrink-0 overflow-hidden rounded-2xl border bg-neutral-950 transition-all duration-500 ease-out transform-gpu ${positionClass}`}
+        >
+          <img
+            src={resolveAssetUrl(s.src)}
+            alt={s.title || `BristeWeen ${s.year}`}
+            loading="lazy"
+            width={768}
+            height={1024}
+            className="aspect-[3/4] w-full object-cover"
+          />
+
+          {/* Rating Badge or Custom Icon */}
+          {s.rating ? (
+            <span className="absolute right-2.5 top-2.5 flex items-center gap-1 rounded-full bg-black/75 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-500/30 backdrop-blur-md shadow-md">
+              <span>{s.rating}</span>
+              <span className="text-amber-400">★</span>
+            </span>
+          ) : s.icon ? (
+            <span className="absolute right-2.5 top-2.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-[12px] backdrop-blur-md border border-white/20">
+              {s.icon}
+            </span>
+          ) : null}
+
+          {/* Subtitle / Title Bar on Active Card (only if title or sub present) */}
+          {pos === 0 && hasOverlayText && (
+            <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent p-3 pt-10 text-center">
+              {s.title && (
+                <span className="block text-sm font-bold uppercase tracking-wide text-white drop-shadow">
+                  {s.title}
+                </span>
+              )}
+              {s.sub && (
+                <span className="mt-0.5 block text-[11px] uppercase tracking-widest text-white/80 font-mono">
+                  {s.sub}
+                </span>
+              )}
+            </span>
+          )}
+        </button>
       </div>
+    );
+  };
+
+  return (
+    <div
+      className="relative w-full max-w-full overflow-visible py-2 sm:py-4 [perspective:1000px]"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      <div className="flex items-center justify-center gap-1 sm:gap-2 py-2 sm:py-3 overflow-visible">
+        {offsets.map((pos) => n > Math.abs(pos) && card(at(pos), pos))}
+      </div>
+
       {n > 1 && (
-        <div className="mt-5 flex items-center justify-center gap-4">
+        <div className="mt-4 sm:mt-6 flex items-center justify-center gap-4">
           <button
             onClick={() => setI((i - 1 + n) % n)}
             aria-label="Anterior"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:border-primary hover:text-primary"
+            className={`flex h-9 w-9 items-center justify-center rounded-full border bg-black/70 transition-all duration-300 active:scale-95 ${btnStyle}`}
           >
             ‹
           </button>
-          {n > 12 ? (
-            <span className="text-xs font-bold tabular-nums text-muted-foreground">
-              {i + 1} / {n}
-            </span>
-          ) : (
-            <div className="flex gap-1.5">
-              {slides.map((_, k) => (
-                <span
-                  key={k}
-                  className={`h-1.5 rounded-full transition-all ${k === i ? `w-5 ${dotStyle}` : "w-1.5 bg-muted"}`}
-                />
-              ))}
-            </div>
-          )}
+
+          <div
+            className={`flex items-center gap-2 rounded-full border px-4 py-1 backdrop-blur-md ${counterBorder}`}
+          >
+            <span className={`text-xs font-bold tabular-nums ${counterText}`}>{i + 1}</span>
+            <span className="text-xs text-neutral-500">/</span>
+            <span className="text-xs font-bold tabular-nums text-neutral-400">{n}</span>
+          </div>
+
           <button
             onClick={() => setI((i + 1) % n)}
             aria-label="Próximo"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:border-primary hover:text-primary"
+            className={`flex h-9 w-9 items-center justify-center rounded-full border bg-black/70 transition-all duration-300 active:scale-95 ${btnStyle}`}
           >
             ›
           </button>
@@ -200,32 +289,66 @@ function Carousel({
   );
 }
 
-const YEARS = ["2025", "2024", "2023"] as const;
+const YEARS = ["Todos", "2025", "2024", "2023"] as const;
+
 function Gallery() {
-  const [year, setYear] = useState<(typeof YEARS)[number]>("2025");
-  const urls = (edicoes as Record<string, string[]>)[year] ?? [];
+  const [yearFilter, setYearFilter] = useState<(typeof YEARS)[number]>("2025");
+
+  // Filter slides based on year or return all photos combined
+  const getSlides = (): Slide[] => {
+    const rawEdicoes = edicoes as Record<string, string[]>;
+    if (yearFilter === "Todos") {
+      const all: Slide[] = [];
+      ["2025", "2024", "2023"].forEach((y) => {
+        const list = rawEdicoes[y] ?? [];
+        list.forEach((src, idx) => {
+          const ratingVal = (8.5 + ((idx * 7) % 14) * 0.1).toFixed(1);
+          all.push({
+            src: resolveAssetUrl(src),
+            title: "",
+            sub: "",
+            year: y,
+            rating: ratingVal,
+          });
+        });
+      });
+      return all;
+    }
+
+    const list = rawEdicoes[yearFilter] ?? [];
+    return list.map((src, idx) => {
+      const ratingVal = (8.5 + ((idx * 7) % 14) * 0.1).toFixed(1);
+      return {
+        src: resolveAssetUrl(src),
+        title: "",
+        sub: "",
+        year: yearFilter,
+        rating: ratingVal,
+      };
+    });
+  };
+
+  const slides = getSlides();
+
   return (
-    <div>
-      <div className="mb-6 flex justify-center gap-2">
+    <div className="w-full max-w-full overflow-visible py-1 sm:py-2">
+      <div className="mb-3 sm:mb-4 flex flex-wrap items-center justify-center gap-2 relative z-20">
+        <span className="text-xs font-mono text-muted-foreground mr-1">Edições:</span>
         {YEARS.map((y) => (
           <button
             key={y}
-            onClick={() => setYear(y)}
-            className={`rounded-full border px-4 py-1.5 text-xs font-bold tracking-wider transition ${y === year ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:border-primary hover:text-primary"}`}
+            onClick={() => setYearFilter(y)}
+            className={`rounded-full border px-4 py-1.5 text-xs font-bold tracking-wider transition-all duration-300 ${
+              y === yearFilter
+                ? "border-red-500 bg-red-600 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)]"
+                : "border-neutral-800 bg-black/60 text-neutral-400 hover:border-red-500/50 hover:text-red-200"
+            }`}
           >
             {y}
           </button>
         ))}
       </div>
-      <Carousel
-        key={year}
-        slides={urls.map((src, k) => ({
-          src: resolveAssetUrl(src),
-          title: `BristeWeen ${year}`,
-          sub: `Foto ${k + 1}`,
-          year,
-        }))}
-      />
+      <Carousel key={yearFilter} slides={slides} accent="red" />
     </div>
   );
 }
@@ -240,13 +363,17 @@ function Section({
   eyebrow: string;
   title: string;
   desc: string;
-  pill?: "amber" | "purple" | "rose";
+  pill?: "red" | "emerald" | "green" | "amber" | "purple" | "rose";
   children: React.ReactNode;
 }) {
   return (
-    <section className="py-14 text-center">
-      {pill === "amber" ? (
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-950/40 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.25em] text-amber-300 shadow-[0_0_20px_-5px_rgba(245,158,11,0.3)]">
+    <section className="py-8 sm:py-10 text-center w-full max-w-full overflow-visible">
+      {pill === "red" ? (
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-red-500/40 bg-red-950/40 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.25em] text-red-300 shadow-[0_0_20px_-5px_rgba(239,68,68,0.3)]">
+          <span>🎃</span> {eyebrow}
+        </span>
+      ) : pill === "emerald" || pill === "green" || pill === "amber" ? (
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-950/40 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.25em] text-emerald-300 shadow-[0_0_20px_-5px_rgba(16,185,129,0.3)]">
           <span>👑</span> {eyebrow}
         </span>
       ) : pill === "purple" ? (
@@ -262,47 +389,14 @@ function Section({
           🎃 {eyebrow}
         </p>
       )}
-      <h2 className="mt-2 text-4xl text-foreground sm:text-5xl">{title}</h2>
-      <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">{desc}</p>
-      <div className="mt-8">{children}</div>
+      <h2 className="mt-2 text-3xl sm:text-5xl text-foreground px-2">{title}</h2>
+      <p className="mx-auto mt-2 sm:mt-3 max-w-md text-xs sm:text-sm text-muted-foreground px-3">
+        {desc}
+      </p>
+      <div className="mt-2 sm:mt-4 w-full max-w-full overflow-visible">{children}</div>
     </section>
   );
 }
-
-const SOCIALS = [
-  {
-    icon: "📸",
-    name: "Instagram",
-    handle: "@bristeween",
-    desc: "Acompanhe as publicações diretamente pelo Instagram oficial.",
-    cta: "Ver no Instagram",
-    href: "https://instagram.com",
-  },
-  {
-    icon: "🎵",
-    name: "TikTok",
-    handle: "@bristeween",
-    desc: "Assista aos nossos vídeos do ritual diretamente pelo TikTok.",
-    cta: "Ver no TikTok",
-    href: "https://tiktok.com",
-  },
-  {
-    icon: "▶️",
-    name: "YouTube",
-    handle: "BristeWeen",
-    desc: "Assista aos lançamentos e rituais passados na alta definição.",
-    cta: "Ver no YouTube",
-    href: "https://youtube.com",
-  },
-  {
-    icon: "🎧",
-    name: "Spotify",
-    handle: "BristeWeen 2026",
-    desc: "Sintonize na trilha sonora do nosso macabro no Spotify.",
-    cta: "Ouvir playlist",
-    href: "https://spotify.com",
-  },
-];
 
 function IntroScreen({ onStart }: { onStart: () => void }) {
   return (
@@ -426,6 +520,7 @@ function Index() {
   const [stage, setStage] = useState<"intro" | "playing" | "done">("intro");
   const [videoSrc, setVideoSrc] = useState(VIDEO_DESKTOP);
   const [isFading, setIsFading] = useState(false);
+  const [activeTab, setActiveTab] = useState<NavTab>("ritual");
 
   const handleStartMission = () => {
     const isMobile = window.innerWidth < 768;
@@ -447,6 +542,22 @@ function Index() {
     setStage("playing");
   };
 
+  const handleSelectTab = (tab: NavTab) => {
+    setActiveTab(tab);
+    if (tab === "ritual") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (tab === "parceiros") {
+      const el = document.getElementById("parceiros-section");
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    } else if (tab === "concursos") {
+      const el = document.getElementById("hall-dos-imortais");
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    } else if (tab === "perfil") {
+      const el = document.getElementById("donos-do-caldeirao");
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <>
       {stage === "intro" && <IntroScreen onStart={handleStartMission} />}
@@ -455,31 +566,43 @@ function Index() {
       )}
 
       <main
-        className={`mx-auto max-w-5xl px-4 pb-20 transition-opacity duration-700 ${
+        className={`mx-auto w-full max-w-[1540px] px-3 sm:px-6 lg:px-8 pb-20 overflow-visible no-scrollbar transition-opacity duration-700 ${
           stage === "intro"
             ? "opacity-0 pointer-events-none h-screen overflow-hidden"
             : "opacity-100"
         }`}
       >
-        <header className="pb-8 pt-12 text-center">
-          <img
-            src={LOGO}
-            alt="Logo BristeWeen"
-            className="mx-auto mb-6 h-36 w-auto animate-floaty sm:h-44"
-          />
-          <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">
-            07 de novembro · 22h30
-          </p>
-          <div className="mt-8">
-            <Countdown />
+        <Navigation
+          activeTab={activeTab}
+          onSelectTab={handleSelectTab}
+          onReplayIntro={handleReplayIntro}
+        />
+
+        <div id="parceiros-section" className="pt-2">
+          <Parceiros />
+        </div>
+
+        <header className="relative pb-6 pt-6 sm:pt-10 text-center">
+          {/* Ambient Orange Glow behind Logo */}
+          <div className="relative mx-auto inline-block">
+            <div className="absolute inset-0 rounded-full bg-orange-600/35 blur-3xl scale-125 pointer-events-none" />
+            <img
+              src={LOGO}
+              alt="Logo BristeWeen"
+              className="relative z-10 mx-auto mb-6 h-36 w-auto animate-floaty sm:h-44 drop-shadow-[0_0_35px_rgba(249,115,22,0.75)]"
+            />
           </div>
-          <div className="mt-6 flex justify-center">
-            <button
-              onClick={handleReplayIntro}
-              className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-card/60 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary/80 transition hover:border-primary hover:bg-card hover:text-primary hover:scale-105"
-            >
-              <span>🎬 Rever Vídeo de Entrada</span>
-            </button>
+
+          <p className="text-xs uppercase tracking-[0.4em] text-orange-200/80 font-mono">
+            07 de novembro · 20:30
+          </p>
+
+          {/* Ambient Orange Glow behind Countdown Clock */}
+          <div className="relative mt-8">
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-28 w-80 sm:w-96 rounded-full bg-orange-600/30 blur-3xl pointer-events-none" />
+            <div className="relative z-10">
+              <Countdown />
+            </div>
           </div>
         </header>
 
@@ -487,42 +610,46 @@ function Index() {
           eyebrow="Edições passadas"
           title="Galeria do Ritual"
           desc="Registros das noites em que o sobrenatural tomou conta do BristeWeen."
+          pill="red"
         >
           <Gallery />
         </Section>
 
-        <Section
-          eyebrow="Hall dos Imortais"
-          title="Campeões de Fantasias"
-          desc="As almas que conquistaram a glória suprema e o prêmio máximo nas edições do BristeWeen."
-          pill="amber"
-        >
-          <Carousel
-            slides={[
-              {
-                src: champion2025,
-                title: "Sally e Jack",
-                sub: "por Bianca",
-                year: "2025",
-                icon: "🏆",
-              },
-              {
-                src: champion2024,
-                title: "Turma do Scooby Doo",
-                sub: "por Ericka, Nycole, Vito e Leonardo",
-                year: "2024",
-                icon: "🏆",
-              },
-              {
-                src: champion2023,
-                title: "Motoqueiro Fantasma",
-                sub: "por André Freitas",
-                year: "2023",
-                icon: "🏆",
-              },
-            ]}
-          />
-        </Section>
+        <div id="hall-dos-imortais">
+          <Section
+            eyebrow="Hall dos Imortais"
+            title="Campeões de Fantasias"
+            desc="As almas que conquistaram a glória suprema e o prêmio máximo nas edições do BristeWeen."
+            pill="green"
+          >
+            <Carousel
+              accent="green"
+              slides={[
+                {
+                  src: champion2025,
+                  title: "Sally e Jack",
+                  sub: "por Bianca",
+                  year: "2025",
+                  icon: "🏆",
+                },
+                {
+                  src: champion2024,
+                  title: "Turma do Scooby Doo",
+                  sub: "por Ericka, Nycole, Vito e Leonardo",
+                  year: "2024",
+                  icon: "🏆",
+                },
+                {
+                  src: champion2023,
+                  title: "Motoqueiro Fantasma",
+                  sub: "por André Freitas",
+                  year: "2023",
+                  icon: "🏆",
+                },
+              ]}
+            />
+          </Section>
+        </div>
 
         <Section
           eyebrow="Segredos Revelados"
@@ -564,33 +691,9 @@ function Index() {
           />
         </Section>
 
-        <section className="py-14">
-          <p className="text-center text-[11px] font-bold uppercase tracking-[0.35em] text-primary">
-            📡 Sinais do além
-          </p>
-          <h2 className="mt-2 text-center text-4xl text-foreground sm:text-5xl">Siga o Ritual</h2>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {SOCIALS.map((s) => (
-              <a
-                key={s.name}
-                href={s.href}
-                target="_blank"
-                rel="noreferrer"
-                className="group rounded-2xl border border-border bg-card p-5 text-center transition hover:border-primary/60 hover:shadow-[0_0_40px_-15px] hover:shadow-primary/40"
-              >
-                <div className="text-3xl">{s.icon}</div>
-                <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.25em] text-primary">
-                  {s.name}
-                </p>
-                <p className="mt-1 text-sm font-semibold text-foreground">{s.handle}</p>
-                <p className="mt-2 text-xs text-muted-foreground">{s.desc}</p>
-                <span className="mt-4 inline-block rounded-lg border border-primary/50 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
-                  {s.cta}
-                </span>
-              </a>
-            ))}
-          </div>
-        </section>
+        <DonosDoCaldeirao />
+
+        <InstagramFeed />
 
         <footer className="border-t border-border pt-8 text-center text-xs text-muted-foreground">
           <p>© BristeWeen 2026 · Sobrenatural</p>
