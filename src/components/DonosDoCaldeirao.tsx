@@ -51,13 +51,13 @@ export function DonosDoCaldeirao() {
   }, [paused, total]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
+    touchStartX.current = (e.touches[0]?.clientX ?? 0);
     setPaused(true);
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current !== null) {
-      const diff = touchStartX.current - e.changedTouches[0].clientX;
+      const diff = touchStartX.current - (e.changedTouches[0]?.clientX ?? 0);
       if (Math.abs(diff) > 35) {
         if (diff > 0) next();
         else prev();

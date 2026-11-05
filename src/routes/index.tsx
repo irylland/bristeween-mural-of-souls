@@ -51,7 +51,7 @@ type Slide = {
 function resolveAssetUrl(src: string): string {
   if (!src) return "";
   if (src.startsWith("/__l5e/")) {
-    return `${LOVABLE_CDN}${src}`;
+    return src;
   }
   return src;
 }
@@ -111,13 +111,13 @@ function Carousel({
   }, [paused, i, n, delay]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
+    touchStartX.current = (e.touches[0]?.clientX ?? 0);
     setPaused(true);
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current !== null) {
-      const diff = touchStartX.current - e.changedTouches[0].clientX;
+      const diff = touchStartX.current - (e.changedTouches[0]?.clientX ?? 0);
       if (Math.abs(diff) > 35) {
         if (diff > 0) {
           setI((k) => (k + 1) % n);
