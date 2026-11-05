@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type FormEvent } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useRef, useState } from "react";
 import champion2025 from "@/assets/champion-2025.webp";
 import champion2024 from "@/assets/champion-2024.jpg";
 import champion2023 from "@/assets/champion-2023.jpg";
@@ -17,9 +16,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "BristeWeen — Sobrenatural" },
-      { name: "description", content: "Contagem regressiva para a festa BristeWeen. Confirme presença e deixe sua mensagem no Mural de Almas!" },
+      { name: "description", content: "Contagem regressiva para a festa BristeWeen Sobrenatural." },
       { property: "og:title", content: "BristeWeen — Sobrenatural" },
-      { property: "og:description", content: "Confirme presença e deixe sua mensagem assustadora no Mural de Almas!" },
+      { property: "og:description", content: "Contagem regressiva para a festa BristeWeen Sobrenatural." },
       { property: "og:image", content: LOGO },
       { name: "twitter:image", content: LOGO },
     ],
@@ -27,11 +26,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Soul = { id: string; name: string; message: string; created_at: string };
 type Slide = { src: string; title: string; sub: string; year: string; icon?: string };
-
-const input = "w-full rounded-lg border border-input bg-muted px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring";
-const btn = "w-full rounded-lg bg-primary px-4 py-3 font-bold text-primary-foreground glow transition hover:brightness-110 disabled:opacity-50";
 
 function Countdown() {
   const [now, setNow] = useState<number | null>(null);
@@ -182,62 +177,6 @@ function Section({
       <h2 className="mt-2 text-4xl text-foreground sm:text-5xl">{title}</h2>
       <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">{desc}</p>
       <div className="mt-8">{children}</div>
-    </section>
-  );
-}
-
-function Rsvp() {
-  const [name, setName] = useState(""); const [guests, setGuests] = useState(1); const [costume, setCostume] = useState("");
-  const [count, setCount] = useState(0); const [done, setDone] = useState(false); const [busy, setBusy] = useState(false);
-  const load = async () => { const { data } = await supabase.from("rsvps").select("guests"); setCount((data ?? []).reduce((a, r) => a + r.guests, 0)); };
-  useEffect(() => { load(); }, []);
-  async function submit(e: FormEvent) {
-    e.preventDefault(); if (!name.trim()) return; setBusy(true);
-    const { error } = await supabase.from("rsvps").insert({ name: name.trim(), guests, costume: costume.trim() || null });
-    setBusy(false); if (!error) { setDone(true); load(); }
-  }
-  return (
-    <section className="rounded-2xl border border-border bg-card p-6 text-left">
-      <h2 className="text-3xl text-primary">Confirme sua presença</h2>
-      <p className="mb-4 text-sm text-muted-foreground">{count} {count === 1 ? "alma confirmada" : "almas confirmadas"}</p>
-      {done ? <p className="text-primary">🎃 Presença confirmada, {name}! Te esperamos no além.</p> : (
-        <form onSubmit={submit} className="space-y-3">
-          <input className={input} placeholder="Seu nome" maxLength={80} value={name} onChange={(e) => setName(e.target.value)} required />
-          <input className={input} type="number" min={1} max={10} value={guests} onChange={(e) => setGuests(Number(e.target.value))} aria-label="Quantidade de pessoas" />
-          <input className={input} placeholder="Sua fantasia (opcional)" maxLength={120} value={costume} onChange={(e) => setCostume(e.target.value)} />
-          <button className={btn} disabled={busy}>Confirmar 🕯️</button>
-        </form>
-      )}
-    </section>
-  );
-}
-
-function Mural() {
-  const [souls, setSouls] = useState<Soul[]>([]); const [name, setName] = useState(""); const [msg, setMsg] = useState(""); const [busy, setBusy] = useState(false);
-  const load = async () => { const { data } = await supabase.from("souls").select("*").order("created_at", { ascending: false }).limit(100); setSouls(data ?? []); };
-  useEffect(() => { load(); }, []);
-  async function submit(e: FormEvent) {
-    e.preventDefault(); if (!name.trim() || !msg.trim()) return; setBusy(true);
-    const { error } = await supabase.from("souls").insert({ name: name.trim(), message: msg.trim() });
-    setBusy(false); if (!error) { setMsg(""); load(); }
-  }
-  return (
-    <section className="rounded-2xl border border-border bg-card p-6 text-left">
-      <h2 className="text-3xl text-accent">Mural de Almas</h2>
-      <form onSubmit={submit} className="my-4 space-y-3">
-        <input className={input} placeholder="Seu nome" maxLength={60} value={name} onChange={(e) => setName(e.target.value)} required />
-        <textarea className={input} placeholder="Deixe sua mensagem assustadora..." maxLength={280} rows={3} value={msg} onChange={(e) => setMsg(e.target.value)} required />
-        <button className={btn} disabled={busy}>Assombrar o mural 👻</button>
-      </form>
-      <ul className="max-h-96 space-y-3 overflow-y-auto">
-        {souls.length === 0 && <li className="text-sm text-muted-foreground">Nenhuma alma por aqui ainda...</li>}
-        {souls.map((s) => (
-          <li key={s.id} className="rounded-lg bg-secondary p-3">
-            <p className="text-secondary-foreground">{s.message}</p>
-            <p className="mt-1 text-xs text-muted-foreground">— {s.name}</p>
-          </li>
-        ))}
-      </ul>
     </section>
   );
 }
@@ -456,10 +395,6 @@ function Index() {
           { src: miss2025, title: "Clarice Sebrain", sub: "Miss Simpatia", year: "2025", icon: "❤️" },
         ]} />
       </Section>
-
-      <section className="py-14">
-        <div className="grid gap-6 md:grid-cols-2"><Rsvp /><Mural /></div>
-      </section>
 
       <section className="py-14">
         <p className="text-center text-[11px] font-bold uppercase tracking-[0.35em] text-primary">📡 Sinais do além</p>
