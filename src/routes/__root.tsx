@@ -86,8 +86,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Creepster&display=swap" },
-      { rel: "icon", type: "image/png", href: "https://res.cloudinary.com/dkpn35e8m/image/upload/v1784320267/Bristeween_Logo_Final-1_gnn9gq.png" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Creepster&display=swap",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        href: "https://res.cloudinary.com/dkpn35e8m/image/upload/v1784320267/Bristeween_Logo_Final-1_gnn9gq.png",
+      },
     ],
   }),
   shellComponent: RootShell,

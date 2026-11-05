@@ -83,7 +83,9 @@
   --input: oklch(0.22 0.02 60);
   --ring: oklch(0.75 0.17 60);
   --glow: 0 0 40px color-mix(in oklab, var(--primary) 45%, transparent);
-  --gradient-night: radial-gradient(ellipse 80% 50% at 50% -10%, oklch(0.22 0.06 50 / 0.55), transparent 70%), radial-gradient(ellipse 60% 40% at 50% 110%, oklch(0.2 0.05 340 / 0.35), transparent 70%);
+  --gradient-night:
+    radial-gradient(ellipse 80% 50% at 50% -10%, oklch(0.22 0.06 50 / 0.55), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 50% 110%, oklch(0.2 0.05 340 / 0.35), transparent 70%);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -145,7 +147,31 @@
   }
 }
 
-@layer base { body { font-family: 'Comfortaa', system-ui, sans-serif; background-image: var(--gradient-night); min-height:100vh; } h1,h2,h3 { font-family: 'Creepster', cursive; letter-spacing: .04em; } }
-@utility glow { box-shadow: var(--glow); }
-@keyframes floaty { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-12px) } }
-@utility animate-floaty { animation: floaty 5s ease-in-out infinite; }
+@layer base {
+  body {
+    font-family: "Comfortaa", system-ui, sans-serif;
+    background-image: var(--gradient-night);
+    min-height: 100vh;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: "Creepster", cursive;
+    letter-spacing: 0.04em;
+  }
+}
+@utility glow {
+  box-shadow: var(--glow);
+}
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+@utility animate-floaty {
+  animation: floaty 5s ease-in-out infinite;
+}

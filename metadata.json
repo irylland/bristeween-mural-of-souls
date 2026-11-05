@@ -1,0 +1,6 @@
+{
+  "name": "BristeWeen — Sobrenatural",
+  "description": "Contagem regressiva e celebração do ritual BristeWeen com hall de campeões e galeria de fotos.",
+  "permissions": [],
+  "capabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
