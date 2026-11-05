@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import gallery4 from "@/assets/gallery-4.jpg";
 import champion2025 from "@/assets/champion-2025.webp";
 import champion2024 from "@/assets/champion-2024.jpg";
 import champion2023 from "@/assets/champion-2023.jpg";
 import mystery2025 from "@/assets/mystery-2025.jpg";
+import miss2025 from "@/assets/miss-2025.jpg";
 import edicoes from "@/assets/edicoes.json";
 
 const LOGO = "https://res.cloudinary.com/dkpn35e8m/image/upload/v1784320267/Bristeween_Logo_Final-1_gnn9gq.png";
@@ -53,7 +53,7 @@ function Countdown() {
   );
 }
 
-function Carousel({ slides, accent, delay = 3500 }: { slides: Slide[]; accent?: boolean; delay?: number }) {
+function Carousel({ slides, accent, delay = 3500 }: { slides: Slide[]; accent?: boolean | "purple" | "rose"; delay?: number }) {
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
   const n = slides.length;
@@ -63,6 +63,24 @@ function Carousel({ slides, accent, delay = 3500 }: { slides: Slide[]; accent?: 
     const t = setInterval(() => setI((k) => (k + 1) % n), delay);
     return () => clearInterval(t);
   }, [paused, i, n, delay]);
+
+  const isRose = accent === "rose";
+  const isPurple = accent === "purple" || accent === true;
+
+  const activeBorder = isRose
+    ? "border-rose-500/70 shadow-[0_0_50px_-10px] shadow-rose-500/40"
+    : isPurple
+    ? "border-purple-500/70 shadow-[0_0_50px_-10px] shadow-purple-500/40"
+    : "border-primary/60 shadow-[0_0_50px_-10px] shadow-primary/40";
+
+  const badgeStyle = isRose
+    ? "bg-rose-950/80 text-rose-200 border border-rose-500/40"
+    : isPurple
+    ? "bg-purple-950/80 text-purple-200 border border-purple-500/40"
+    : "bg-primary text-primary-foreground";
+
+  const dotStyle = isRose ? "bg-rose-500" : isPurple ? "bg-purple-500" : "bg-primary";
+
   const card = (s: Slide, pos: -1 | 0 | 1) => (
     <button
       key={pos}
@@ -70,12 +88,12 @@ function Carousel({ slides, accent, delay = 3500 }: { slides: Slide[]; accent?: 
       aria-label={pos === 0 ? s.title : pos === -1 ? "Anterior" : "Próximo"}
       className={`relative w-44 shrink-0 overflow-hidden rounded-2xl border transition-all duration-500 sm:w-56 ${
         pos === 0
-          ? `z-10 scale-100 opacity-100 ${accent ? "border-accent/60 shadow-[0_0_50px_-10px] shadow-accent/40" : "border-primary/60 shadow-[0_0_50px_-10px] shadow-primary/40"}`
+          ? `z-10 scale-100 opacity-100 ${activeBorder}`
           : `scale-90 opacity-40 hover:opacity-70 ${pos === -1 ? "-rotate-6" : "rotate-6"} border-border`
       }`}
     >
       <img src={s.src} alt={s.title} loading="lazy" width={768} height={1024} className="aspect-[3/4] w-full object-cover" />
-      <span className={`absolute left-2.5 top-2.5 rounded-full px-2 py-0.5 text-[10px] font-bold ${accent ? "bg-accent text-accent-foreground" : "bg-primary text-primary-foreground"}`}>{s.year}</span>
+      <span className={`absolute left-2.5 top-2.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${badgeStyle}`}>{s.year}</span>
       {s.icon && (
         <span className="absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-[11px] backdrop-blur-sm">
           {s.icon}
@@ -104,7 +122,7 @@ function Carousel({ slides, accent, delay = 3500 }: { slides: Slide[]; accent?: 
           ) : (
             <div className="flex gap-1.5">
               {slides.map((_, k) => (
-                <span key={k} className={`h-1.5 rounded-full transition-all ${k === i ? `w-5 ${accent ? "bg-accent" : "bg-primary"}` : "w-1.5 bg-muted"}`} />
+                <span key={k} className={`h-1.5 rounded-full transition-all ${k === i ? `w-5 ${dotStyle}` : "w-1.5 bg-muted"}`} />
               ))}
             </div>
           )}
@@ -141,7 +159,7 @@ function Section({
   eyebrow: string;
   title: string;
   desc: string;
-  pill?: "amber" | "purple";
+  pill?: "amber" | "purple" | "rose";
   children: React.ReactNode;
 }) {
   return (
@@ -153,6 +171,10 @@ function Section({
       ) : pill === "purple" ? (
         <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/40 bg-purple-950/40 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.25em] text-purple-300 shadow-[0_0_20px_-5px_rgba(168,85,247,0.3)]">
           <span>🎁</span> {eyebrow}
+        </span>
+      ) : pill === "rose" ? (
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-950/40 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.25em] text-rose-300 shadow-[0_0_20px_-5px_rgba(244,63,94,0.3)]">
+          <span>♡</span> {eyebrow}
         </span>
       ) : (
         <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-primary">🎃 {eyebrow}</p>
@@ -419,14 +441,19 @@ function Index() {
         desc="As almas corajosas que desvendaram os enigmas sombrios do BristeWeen."
         pill="purple"
       >
-        <Carousel accent slides={[
+        <Carousel accent="purple" slides={[
           { src: mystery2025, title: "Caixa Mistério 2025", sub: "Desvendado por Yasmin", year: "2025", icon: "📦" },
         ]} />
       </Section>
 
-      <Section eyebrow="Charme & carisma" title="Miss Simpatia" desc="As presenças mais cativantes que conquistaram os corações do BristeWeen.">
-        <Carousel accent slides={[
-          { src: gallery4, title: "Bruxa da Noite", sub: "Miss Simpatia 2025", year: "2025" },
+      <Section
+        eyebrow="Charme & Carisma"
+        title="Miss Simpatia"
+        desc="As presenças mais cativantes que conquistaram os corações do BristeWeen."
+        pill="rose"
+      >
+        <Carousel accent="rose" slides={[
+          { src: miss2025, title: "Clarice Sebrain", sub: "Miss Simpatia", year: "2025", icon: "❤️" },
         ]} />
       </Section>
 
