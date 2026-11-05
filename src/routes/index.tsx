@@ -1,13 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import gallery1 from "@/assets/gallery-1.jpg";
-import gallery2 from "@/assets/gallery-2.jpg";
-import gallery3 from "@/assets/gallery-3.jpg";
 import gallery4 from "@/assets/gallery-4.jpg";
 import champion2025 from "@/assets/champion-2025.webp";
 import champion2024 from "@/assets/champion-2024.jpg";
 import champion2023 from "@/assets/champion-2023.jpg";
+import mystery2025 from "@/assets/mystery-2025.jpg";
 import edicoes from "@/assets/edicoes.json";
 
 const LOGO = "https://res.cloudinary.com/dkpn35e8m/image/upload/v1784320267/Bristeween_Logo_Final-1_gnn9gq.png";
@@ -30,7 +28,7 @@ export const Route = createFileRoute("/")({
 });
 
 type Soul = { id: string; name: string; message: string; created_at: string };
-type Slide = { src: string; title: string; sub: string; year: string };
+type Slide = { src: string; title: string; sub: string; year: string; icon?: string };
 
 const input = "w-full rounded-lg border border-input bg-muted px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring";
 const btn = "w-full rounded-lg bg-primary px-4 py-3 font-bold text-primary-foreground glow transition hover:brightness-110 disabled:opacity-50";
@@ -77,11 +75,16 @@ function Carousel({ slides, accent, delay = 3500 }: { slides: Slide[]; accent?: 
       }`}
     >
       <img src={s.src} alt={s.title} loading="lazy" width={768} height={1024} className="aspect-[3/4] w-full object-cover" />
-      <span className={`absolute left-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-bold ${accent ? "bg-accent text-accent-foreground" : "bg-primary text-primary-foreground"}`}>{s.year}</span>
+      <span className={`absolute left-2.5 top-2.5 rounded-full px-2 py-0.5 text-[10px] font-bold ${accent ? "bg-accent text-accent-foreground" : "bg-primary text-primary-foreground"}`}>{s.year}</span>
+      {s.icon && (
+        <span className="absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-[11px] backdrop-blur-sm">
+          {s.icon}
+        </span>
+      )}
       {pos === 0 && (
-        <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-3 pt-8 text-left">
+        <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent p-3 pt-10 text-center">
           <span className="block text-sm font-bold uppercase tracking-wide text-white">{s.title}</span>
-          <span className="block text-[11px] uppercase tracking-widest text-white/70">{s.sub}</span>
+          <span className="mt-0.5 block text-[11px] uppercase tracking-widest text-white/70">{s.sub}</span>
         </span>
       )}
     </button>
@@ -128,10 +131,32 @@ function Gallery() {
   );
 }
 
-function Section({ eyebrow, title, desc, children }: { eyebrow: string; title: string; desc: string; children: React.ReactNode }) {
+function Section({
+  eyebrow,
+  title,
+  desc,
+  pill,
+  children,
+}: {
+  eyebrow: string;
+  title: string;
+  desc: string;
+  pill?: "amber" | "purple";
+  children: React.ReactNode;
+}) {
   return (
     <section className="py-14 text-center">
-      <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-primary">🎃 {eyebrow}</p>
+      {pill === "amber" ? (
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-950/40 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.25em] text-amber-300 shadow-[0_0_20px_-5px_rgba(245,158,11,0.3)]">
+          <span>👑</span> {eyebrow}
+        </span>
+      ) : pill === "purple" ? (
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/40 bg-purple-950/40 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.25em] text-purple-300 shadow-[0_0_20px_-5px_rgba(168,85,247,0.3)]">
+          <span>🎁</span> {eyebrow}
+        </span>
+      ) : (
+        <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-primary">🎃 {eyebrow}</p>
+      )}
       <h2 className="mt-2 text-4xl text-foreground sm:text-5xl">{title}</h2>
       <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">{desc}</p>
       <div className="mt-8">{children}</div>
@@ -375,17 +400,27 @@ function Index() {
       </Section>
 
 
-      <Section eyebrow="Hall dos Imortais" title="Campeões de Fantasias" desc="As almas que conquistaram a glória suprema e o prêmio máximo nas edições do BristeWeen.">
+      <Section
+        eyebrow="Hall dos Imortais"
+        title="Campeões de Fantasias"
+        desc="As almas que conquistaram a glória suprema e o prêmio máximo nas edições do BristeWeen."
+        pill="amber"
+      >
         <Carousel slides={[
-          { src: champion2025, title: "Sally e Jack", sub: "por Bianca", year: "2025" },
-          { src: champion2024, title: "Turma do Scooby Doo", sub: "por Ericka, Nycole, Vito e Leonardo", year: "2024" },
-          { src: champion2023, title: "Motoqueiro Fantasma", sub: "por André Freitas", year: "2023" },
+          { src: champion2025, title: "Sally e Jack", sub: "por Bianca", year: "2025", icon: "🏆" },
+          { src: champion2024, title: "Turma do Scooby Doo", sub: "por Ericka, Nycole, Vito e Leonardo", year: "2024", icon: "🏆" },
+          { src: champion2023, title: "Motoqueiro Fantasma", sub: "por André Freitas", year: "2023", icon: "🏆" },
         ]} />
       </Section>
 
-      <Section eyebrow="Surpresas ocultas" title="Ganhadores das Caixas Mistério" desc="As almas sortudas que desvendaram o mistério sombrio do BristeWeen.">
+      <Section
+        eyebrow="Segredos Revelados"
+        title="Ganhadores das Caixas Mistério"
+        desc="As almas corajosas que desvendaram os enigmas sombrios do BristeWeen."
+        pill="purple"
+      >
         <Carousel accent slides={[
-          { src: gallery3, title: "Caixa Mistério 2025", sub: "Ganhadora da noite", year: "2025" },
+          { src: mystery2025, title: "Caixa Mistério 2025", sub: "Desvendado por Yasmin", year: "2025", icon: "📦" },
         ]} />
       </Section>
 
