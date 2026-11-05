@@ -34,6 +34,16 @@ export const Route = createFileRoute("/")({
 
 type Slide = { src: string; title: string; sub: string; year: string; icon?: string };
 
+const LOVABLE_CDN = "https://bristeween-mural-of-souls.lovable.app";
+
+function resolveAssetUrl(src: string): string {
+  if (!src) return "";
+  if (src.startsWith("/__l5e/")) {
+    return `${LOVABLE_CDN}${src}`;
+  }
+  return src;
+}
+
 function Countdown() {
   const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
@@ -111,14 +121,14 @@ function Carousel({
       key={pos}
       onClick={() => pos !== 0 && setI((i + pos + n) % n)}
       aria-label={pos === 0 ? s.title : pos === -1 ? "Anterior" : "Próximo"}
-      className={`relative w-44 shrink-0 overflow-hidden rounded-2xl border transition-all duration-500 sm:w-56 ${
+      className={`relative w-44 shrink-0 overflow-hidden rounded-2xl border bg-neutral-950 transition-all duration-500 sm:w-56 ${
         pos === 0
           ? `z-10 scale-100 opacity-100 ${activeBorder}`
           : `scale-90 opacity-40 hover:opacity-70 ${pos === -1 ? "-rotate-6" : "rotate-6"} border-border`
       }`}
     >
       <img
-        src={s.src}
+        src={resolveAssetUrl(s.src)}
         alt={s.title}
         loading="lazy"
         width={768}
@@ -210,7 +220,7 @@ function Gallery() {
       <Carousel
         key={year}
         slides={urls.map((src, k) => ({
-          src,
+          src: resolveAssetUrl(src),
           title: `BristeWeen ${year}`,
           sub: `Foto ${k + 1}`,
           year,
