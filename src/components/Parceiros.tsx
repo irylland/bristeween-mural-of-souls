@@ -15,7 +15,7 @@ const PARTNERS: Partner[] = [
     bg: "bg-black",
   },
   {
-    name: "BETH GIRL ALAGOAS",
+    name: "BETH GIRL MACEIÓ",
     url: "https://www.instagram.com/bethgirl_alagoas/",
     logo: "/parceiros/bethgirl.png",
     bg: "bg-[#e20074]",

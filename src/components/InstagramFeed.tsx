@@ -15,12 +15,7 @@ export function InstagramFeed() {
     script.src = scriptSrc;
     script.async = true;
     script.onload = () => {
-      if (
-        typeof window !== "undefined" &&
-        (window as unknown as { tiktokEmbed?: { load: () => void } }).tiktokEmbed
-      ) {
-        (window as unknown as { tiktokEmbed: { load: () => void } }).tiktokEmbed.load();
-      }
+      // TikTok embed script automatically initializes on load
     };
     document.body.appendChild(script);
 

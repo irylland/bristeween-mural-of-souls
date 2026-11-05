@@ -9,7 +9,9 @@ import edicoes from "@/assets/edicoes.json";
 import { InstagramFeed } from "@/components/InstagramFeed";
 import { DonosDoCaldeirao } from "@/components/DonosDoCaldeirao";
 import { Parceiros } from "@/components/Parceiros";
+import { ParceirosPage } from "@/components/ParceirosPage";
 import { Navigation, type NavTab } from "@/components/Navigation";
+import { AuthModal } from "@/components/AuthModal";
 
 const LOGO =
   "https://res.cloudinary.com/dkpn35e8m/image/upload/v1784320267/Bristeween_Logo_Final-1_gnn9gq.png";
@@ -521,6 +523,7 @@ function Index() {
   const [videoSrc, setVideoSrc] = useState(VIDEO_DESKTOP);
   const [isFading, setIsFading] = useState(false);
   const [activeTab, setActiveTab] = useState<NavTab>("ritual");
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   const handleStartMission = () => {
     const isMobile = window.innerWidth < 768;
@@ -544,17 +547,13 @@ function Index() {
 
   const handleSelectTab = (tab: NavTab) => {
     setActiveTab(tab);
-    if (tab === "ritual") {
+    if (tab === "ritual" || tab === "parceiros") {
       window.scrollTo({ top: 0, behavior: "smooth" });
-    } else if (tab === "parceiros") {
-      const el = document.getElementById("parceiros-section");
-      if (el) el.scrollIntoView({ behavior: "smooth" });
     } else if (tab === "concursos") {
       const el = document.getElementById("hall-dos-imortais");
       if (el) el.scrollIntoView({ behavior: "smooth" });
     } else if (tab === "perfil") {
-      const el = document.getElementById("donos-do-caldeirao");
-      if (el) el.scrollIntoView({ behavior: "smooth" });
+      setIsAuthOpen(true);
     }
   };
 
@@ -564,6 +563,8 @@ function Index() {
       {stage === "playing" && (
         <VideoIntro src={videoSrc} onFinish={handleFinishVideo} isFading={isFading} />
       )}
+
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
 
       <main
         className={`mx-auto w-full max-w-[1540px] px-3 sm:px-6 lg:px-8 pb-20 overflow-visible no-scrollbar transition-opacity duration-700 ${
@@ -576,124 +577,131 @@ function Index() {
           activeTab={activeTab}
           onSelectTab={handleSelectTab}
           onReplayIntro={handleReplayIntro}
+          onOpenAuth={() => setIsAuthOpen(true)}
         />
 
-        <div id="parceiros-section" className="pt-2">
-          <Parceiros />
-        </div>
-
-        <header className="relative pb-6 pt-6 sm:pt-10 text-center">
-          {/* Ambient Orange Glow behind Logo */}
-          <div className="relative mx-auto inline-block">
-            <div className="absolute inset-0 rounded-full bg-orange-600/35 blur-3xl scale-125 pointer-events-none" />
-            <img
-              src={LOGO}
-              alt="Logo BristeWeen"
-              className="relative z-10 mx-auto mb-6 h-36 w-auto animate-floaty sm:h-44 drop-shadow-[0_0_35px_rgba(249,115,22,0.75)]"
-            />
-          </div>
-
-          <p className="text-xs uppercase tracking-[0.4em] text-orange-200/80 font-mono">
-            07 de novembro · 20:30
-          </p>
-
-          {/* Ambient Orange Glow behind Countdown Clock */}
-          <div className="relative mt-8">
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-28 w-80 sm:w-96 rounded-full bg-orange-600/30 blur-3xl pointer-events-none" />
-            <div className="relative z-10">
-              <Countdown />
+        {activeTab === "parceiros" ? (
+          <ParceirosPage onBack={() => handleSelectTab("ritual")} />
+        ) : (
+          <>
+            <div id="parceiros-section" className="pt-2">
+              <Parceiros />
             </div>
-          </div>
-        </header>
 
-        <Section
-          eyebrow="Edições passadas"
-          title="Galeria do Ritual"
-          desc="Registros das noites em que o sobrenatural tomou conta do BristeWeen."
-          pill="red"
-        >
-          <Gallery />
-        </Section>
+            <header className="relative pb-6 pt-6 sm:pt-10 text-center">
+              {/* Ambient Orange Glow behind Logo */}
+              <div className="relative mx-auto inline-block">
+                <div className="absolute inset-0 rounded-full bg-orange-600/35 blur-3xl scale-125 pointer-events-none" />
+                <img
+                  src={LOGO}
+                  alt="Logo BristeWeen"
+                  className="relative z-10 mx-auto mb-6 h-36 w-auto animate-floaty sm:h-44 drop-shadow-[0_0_35px_rgba(249,115,22,0.75)]"
+                />
+              </div>
 
-        <div id="hall-dos-imortais">
-          <Section
-            eyebrow="Hall dos Imortais"
-            title="Campeões de Fantasias"
-            desc="As almas que conquistaram a glória suprema e o prêmio máximo nas edições do BristeWeen."
-            pill="green"
-          >
-            <Carousel
-              accent="green"
-              slides={[
-                {
-                  src: champion2025,
-                  title: "Sally e Jack",
-                  sub: "por Bianca",
-                  year: "2025",
-                  icon: "🏆",
-                },
-                {
-                  src: champion2024,
-                  title: "Turma do Scooby Doo",
-                  sub: "por Ericka, Nycole, Vito e Leonardo",
-                  year: "2024",
-                  icon: "🏆",
-                },
-                {
-                  src: champion2023,
-                  title: "Motoqueiro Fantasma",
-                  sub: "por André Freitas",
-                  year: "2023",
-                  icon: "🏆",
-                },
-              ]}
-            />
-          </Section>
-        </div>
+              <p className="text-xs uppercase tracking-[0.4em] text-orange-200/80 font-mono">
+                07 de novembro · 20:30
+              </p>
 
-        <Section
-          eyebrow="Segredos Revelados"
-          title="Ganhadores das Caixas Mistério"
-          desc="As almas corajosas que desvendaram os enigmas sombrios do BristeWeen."
-          pill="purple"
-        >
-          <Carousel
-            accent="purple"
-            slides={[
-              {
-                src: mystery2025,
-                title: "Caixa Mistério 2025",
-                sub: "Desvendado por Yasmin",
-                year: "2025",
-                icon: "📦",
-              },
-            ]}
-          />
-        </Section>
+              {/* Ambient Orange Glow behind Countdown Clock */}
+              <div className="relative mt-8">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-28 w-80 sm:w-96 rounded-full bg-orange-600/30 blur-3xl pointer-events-none" />
+                <div className="relative z-10">
+                  <Countdown />
+                </div>
+              </div>
+            </header>
 
-        <Section
-          eyebrow="Charme & Carisma"
-          title="Miss Simpatia"
-          desc="As presenças mais cativantes que conquistaram os corações do BristeWeen."
-          pill="rose"
-        >
-          <Carousel
-            accent="rose"
-            slides={[
-              {
-                src: miss2025,
-                title: "Clarice Sebrain",
-                sub: "Miss Simpatia",
-                year: "2025",
-                icon: "❤️",
-              },
-            ]}
-          />
-        </Section>
+            <Section
+              eyebrow="Edições passadas"
+              title="Galeria do Ritual"
+              desc="Registros das noites em que o sobrenatural tomou conta do BristeWeen."
+              pill="red"
+            >
+              <Gallery />
+            </Section>
 
-        <DonosDoCaldeirao />
+            <div id="hall-dos-imortais">
+              <Section
+                eyebrow="Hall dos Imortais"
+                title="Campeões de Fantasias"
+                desc="As almas que conquistaram a glória suprema e o prêmio máximo nas edições do BristeWeen."
+                pill="green"
+              >
+                <Carousel
+                  accent="green"
+                  slides={[
+                    {
+                      src: champion2025,
+                      title: "Sally e Jack",
+                      sub: "por Bianca",
+                      year: "2025",
+                      icon: "🏆",
+                    },
+                    {
+                      src: champion2024,
+                      title: "Turma do Scooby Doo",
+                      sub: "por Ericka, Nycole, Vito e Leonardo",
+                      year: "2024",
+                      icon: "🏆",
+                    },
+                    {
+                      src: champion2023,
+                      title: "Motoqueiro Fantasma",
+                      sub: "por André Freitas",
+                      year: "2023",
+                      icon: "🏆",
+                    },
+                  ]}
+                />
+              </Section>
+            </div>
 
-        <InstagramFeed />
+            <Section
+              eyebrow="Segredos Revelados"
+              title="Ganhadores das Caixas Mistério"
+              desc="As almas corajosas que desvendaram os enigmas sombrios do BristeWeen."
+              pill="purple"
+            >
+              <Carousel
+                accent="purple"
+                slides={[
+                  {
+                    src: mystery2025,
+                    title: "Caixa Mistério 2025",
+                    sub: "Desvendado por Yasmin",
+                    year: "2025",
+                    icon: "📦",
+                  },
+                ]}
+              />
+            </Section>
+
+            <Section
+              eyebrow="Charme & Carisma"
+              title="Miss Simpatia"
+              desc="As presenças mais cativantes que conquistaram os corações do BristeWeen."
+              pill="rose"
+            >
+              <Carousel
+                accent="rose"
+                slides={[
+                  {
+                    src: miss2025,
+                    title: "Clarice Sebrain",
+                    sub: "Miss Simpatia",
+                    year: "2025",
+                    icon: "❤️",
+                  },
+                ]}
+              />
+            </Section>
+
+            <DonosDoCaldeirao />
+
+            <InstagramFeed />
+          </>
+        )}
 
         <footer className="border-t border-border pt-8 text-center text-xs text-muted-foreground">
           <p>© BristeWeen 2026 · Sobrenatural</p>
