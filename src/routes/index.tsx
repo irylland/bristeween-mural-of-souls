@@ -5,6 +5,9 @@ import gallery1 from "@/assets/gallery-1.jpg";
 import gallery2 from "@/assets/gallery-2.jpg";
 import gallery3 from "@/assets/gallery-3.jpg";
 import gallery4 from "@/assets/gallery-4.jpg";
+import champion2025 from "@/assets/champion-2025.webp";
+import champion2024 from "@/assets/champion-2024.jpg";
+import champion2023 from "@/assets/champion-2023.jpg";
 import edicoes from "@/assets/edicoes.json";
 
 const LOGO = "https://res.cloudinary.com/dkpn35e8m/image/upload/v1784320267/Bristeween_Logo_Final-1_gnn9gq.png";
@@ -372,10 +375,11 @@ function Index() {
       </Section>
 
 
-      <Section eyebrow="Hall dos horrores" title="Campeões de Fantasias" desc="As almas que conquistaram a noite sombria e o prêmio máximo das edições do BristeWeen.">
+      <Section eyebrow="Hall dos Imortais" title="Campeões de Fantasias" desc="As almas que conquistaram a glória suprema e o prêmio máximo nas edições do BristeWeen.">
         <Carousel slides={[
-          { src: gallery2, title: "Casal Sombrio", sub: "Campeões 2025", year: "2025" },
-          { src: gallery1, title: "Ghostface", sub: "Campeão 2024", year: "2024" },
+          { src: champion2025, title: "Sally e Jack", sub: "por Bianca", year: "2025" },
+          { src: champion2024, title: "Turma do Scooby Doo", sub: "por Ericka, Nycole, Vito e Leonardo", year: "2024" },
+          { src: champion2023, title: "Motoqueiro Fantasma", sub: "por André Freitas", year: "2023" },
         ]} />
       </Section>
 
