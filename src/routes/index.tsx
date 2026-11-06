@@ -710,7 +710,7 @@ function Index() {
         <footer className="border-t border-border pt-8 text-center text-xs text-muted-foreground">
           <p>© BristeWeen 2026 · Sobrenatural</p>
           <Button asChild variant="ghost" size="icon" className="mt-2 h-8 w-8" title="Administração">
-            <Link to="/painel" aria-label="Administração"><Settings className="h-3 w-3" /></Link>
+            <Link to="/admin" aria-label="Administração"><Settings className="h-3 w-3" /></Link>
           </Button>
         </footer>
       </main>
