@@ -34,7 +34,7 @@ export function EmailAuthForm() {
   };
 
   const reset = async () => {
-    if (!email) return toast.error("Digite seu e-mail primeiro.");
+    if (!email) { toast.error("Digite seu e-mail primeiro."); return; }
     await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
