@@ -19,13 +19,21 @@ export function EmailAuthForm() {
       if (error) toast.error("E-mail ou senha incorretos (ou e-mail ainda não confirmado).");
       else toast.success("Bem-vinda, alma!");
     } else {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: { emailRedirectTo: window.location.origin },
       });
-      if (error) toast.error(error.message);
-      else {
+      if (error)
+        toast.error(
+          /weak|easy to guess/i.test(error.message)
+            ? "Senha muito fácil de adivinhar. Escolha outra."
+            : error.message,
+        );
+      else if (data.user && data.user.identities?.length === 0) {
+        toast.error("Esse e-mail já tem conta. Use “Esqueci a senha” para criar sua senha.");
+        setMode("login");
+      } else {
         toast.success("Conta criada! Confira seu e-mail para confirmar.");
         setMode("login");
       }
