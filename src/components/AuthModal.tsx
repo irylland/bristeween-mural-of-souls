@@ -3,7 +3,7 @@ import { LogOut, X, Sparkles, User, Users, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { GoogleButton } from "@/components/GoogleButton";
+import { EmailAuthForm } from "@/components/EmailAuthForm";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -43,7 +43,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             {user ? "SUA ALMA" : "ACESSAR RITUAL"}
           </h2>
           <p className="mt-1 text-xs text-neutral-400 font-mono break-all">
-            {user ? user.email : "Entre com sua conta Google para criar sua página."}
+            {user ? user.email : "Entre com seu e-mail para criar sua página."}
           </p>
         </div>
 
@@ -68,7 +68,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             </button>
           </div>
         ) : (
-          <GoogleButton />
+          <EmailAuthForm />
         )}
       </div>
     </div>
