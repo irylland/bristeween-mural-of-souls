@@ -51,31 +51,55 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_path: string | null
           avatar_url: string | null
           bio: string | null
           city: string | null
           costume: string | null
+          cover_path: string | null
           created_at: string
           display_name: string
+          human_name: string | null
           id: string
+          monster_path: string | null
+          music_url: string | null
+          relationship: string | null
+          social_battery: number
+          status: string | null
         }
         Insert: {
+          avatar_path?: string | null
           avatar_url?: string | null
           bio?: string | null
           city?: string | null
           costume?: string | null
+          cover_path?: string | null
           created_at?: string
           display_name?: string
+          human_name?: string | null
           id: string
+          monster_path?: string | null
+          music_url?: string | null
+          relationship?: string | null
+          social_battery?: number
+          status?: string | null
         }
         Update: {
+          avatar_path?: string | null
           avatar_url?: string | null
           bio?: string | null
           city?: string | null
           costume?: string | null
+          cover_path?: string | null
           created_at?: string
           display_name?: string
+          human_name?: string | null
           id?: string
+          monster_path?: string | null
+          music_url?: string | null
+          relationship?: string | null
+          social_battery?: number
+          status?: string | null
         }
         Relationships: []
       }
