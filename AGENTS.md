@@ -10,3 +10,5 @@
 > the editor, so keep the branch in a working state.
 
 <!-- LOVABLE:END -->
+
+- Signed-in pages live under src/routes/_authenticated (client-only gate); user uploads go to the private "media" bucket under <userId>/ and are shown via signed URLs, because files must be visible only to signed-in users.
