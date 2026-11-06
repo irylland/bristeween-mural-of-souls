@@ -14,7 +14,7 @@ const linkCls =
   "flex w-full items-center justify-center gap-2 rounded-2xl border border-orange-500/50 bg-orange-950/40 py-3 text-xs font-bold uppercase tracking-widest text-orange-200 hover:border-orange-400 hover:text-white transition-all";
 
 export function AuthModal({ isOpen, onClose }: AuthModalProps) {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, approved } = useAuth();
   if (!isOpen) return null;
 
   const handleSignOut = async () => {
@@ -49,12 +49,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
         {user ? (
           <div className="space-y-3">
-            <Link to="/perfil/$id" params={{ id: user.id }} onClick={onClose} className={linkCls}>
+            {!approved && <p role="status" className="text-center text-sm text-primary">Cadastro pendente. Aguarde a aprovação do administrador.</p>}
+            {approved && <><Link to="/perfil/$id" params={{ id: user.id }} onClick={onClose} className={linkCls}>
               <User className="w-4 h-4" /> Minha página
             </Link>
             <Link to="/comunidade" onClick={onClose} className={linkCls}>
               <Users className="w-4 h-4" /> Comunidade
-            </Link>
+            </Link></>}
             {isAdmin && (
               <Link to="/painel" onClick={onClose} className={linkCls}>
                 <Shield className="w-4 h-4" /> Painel do organizador

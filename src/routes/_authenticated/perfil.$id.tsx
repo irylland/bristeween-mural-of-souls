@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -8,12 +8,18 @@ import { uploadMedia, signedUrls } from "@/lib/media";
 import { Avatar } from "./comunidade";
 
 export const Route = createFileRoute("/_authenticated/perfil/$id")({
+  beforeLoad: async () => {
+    const { data, error } = await supabase.rpc("community_access");
+    if (error || !data) throw redirect({ to: "/auth" });
+  },
   head: () => ({
     meta: [
       { title: "Perfil — BristeWeen" },
       { name: "description", content: "Página de uma alma do BristeWeen." },
       { property: "og:title", content: "Perfil — BristeWeen" },
       { property: "og:description", content: "Fotos, GIFs e recados de uma alma do BristeWeen." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Perfil,

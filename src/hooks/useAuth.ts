@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { canAccessCommunity } from "@/lib/registration-access";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [ready, setReady] = useState(false);
+  const [approved, setApproved] = useState(false);
 
   useEffect(() => {
     const load = async (u: User | null) => {
@@ -18,7 +20,9 @@ export function useAuth() {
           .eq("role", "admin")
           .maybeSingle();
         setIsAdmin(!!data);
-      } else setIsAdmin(false);
+        const { data: registration } = await supabase.from("registrations").select("status").eq("user_id", u.id).maybeSingle();
+        setApproved(canAccessCommunity(registration?.status, !!data));
+      } else { setIsAdmin(false); setApproved(false); }
       setReady(true);
     };
     supabase.auth.getUser().then(({ data }) => load(data.user));
@@ -28,7 +32,7 @@ export function useAuth() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  return { user, isAdmin, ready };
+  return { user, isAdmin, ready, approved };
 }
 
 export async function signInWithGoogle() {

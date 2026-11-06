@@ -10,17 +10,19 @@ export const Route = createFileRoute("/auth")({
       { name: "description", content: "Entre com seu e-mail para acessar a comunidade BristeWeen." },
       { property: "og:title", content: "Entrar — BristeWeen" },
       { property: "og:description", content: "Acesse a comunidade de almas do BristeWeen." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AuthPage,
 });
 
 function AuthPage() {
-  const { user } = useAuth();
+  const { user, approved, ready } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
-    if (user) navigate({ to: "/comunidade", replace: true });
-  }, [user, navigate]);
+    if (ready && user && approved) navigate({ to: "/comunidade", replace: true });
+  }, [user, approved, ready, navigate]);
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-sm rounded-3xl border border-primary/50 bg-card p-8 text-center">

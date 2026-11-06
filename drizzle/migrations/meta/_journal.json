@@ -15,6 +15,13 @@
       "when": 1793923734641,
       "tag": "0001_orkut_profiles",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793926478713,
+      "tag": "0002_registration_approval",
+      "breakpoints": true
     }
   ]
 }

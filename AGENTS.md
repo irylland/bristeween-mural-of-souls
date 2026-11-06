@@ -12,3 +12,4 @@
 <!-- LOVABLE:END -->
 
 - Signed-in pages live under src/routes/_authenticated (client-only gate); user uploads go to the private "media" bucket under <userId>/ and are shown via signed URLs, because files must be visible only to signed-in users.
+- Registration approval lives in a separate RLS-protected table; restrictive community/media policies enforce approval, and approval server functions validate the organizer role before confirming auth accounts, so pending sessions cannot bypass the UI.

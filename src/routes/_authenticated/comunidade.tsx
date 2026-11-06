@@ -1,14 +1,20 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/comunidade")({
+  beforeLoad: async () => {
+    const { data, error } = await supabase.rpc("community_access");
+    if (error || !data) throw redirect({ to: "/auth" });
+  },
   head: () => ({
     meta: [
       { title: "Comunidade — BristeWeen" },
       { name: "description", content: "Todas as almas do BristeWeen." },
       { property: "og:title", content: "Comunidade — BristeWeen" },
       { property: "og:description", content: "Conheça as almas que vão ao BristeWeen." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Comunidade,

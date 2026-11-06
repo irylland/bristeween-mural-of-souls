@@ -10,6 +10,8 @@ export const Route = createFileRoute("/reset-password")({
       { name: "description", content: "Defina uma nova senha para sua conta BristeWeen." },
       { property: "og:title", content: "Nova senha — BristeWeen" },
       { property: "og:description", content: "Defina uma nova senha para sua conta BristeWeen." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ResetPage,

@@ -1,4 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import champion2025 from "@/assets/champion-2025.webp";
 import champion2024 from "@/assets/champion-2024.jpg";
@@ -33,6 +35,8 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:image", content: LOGO },
       { name: "twitter:image", content: LOGO },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,
@@ -705,6 +709,9 @@ function Index() {
 
         <footer className="border-t border-border pt-8 text-center text-xs text-muted-foreground">
           <p>© BristeWeen 2026 · Sobrenatural</p>
+          <Button asChild variant="ghost" size="icon" className="mt-2 h-8 w-8" title="Administração">
+            <Link to="/painel" aria-label="Administração"><Settings className="h-3 w-3" /></Link>
+          </Button>
         </footer>
       </main>
     </>
